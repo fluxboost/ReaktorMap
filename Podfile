@@ -6,5 +6,6 @@ target 'ReaktorMap' do
   use_frameworks!
 
 	pod 'Alamofire'
+	pod 'Moya', '~> 12.0'
 
 end
