@@ -20,7 +20,7 @@ class ReaktorMapViewController: UIViewController {
 	// MARK: - Properties
 	var userLocationManager = UserLocationManager.shared
 	private var viewModel = ReaktorMapViewModel()
-	private var selectedUrl: String?
+	private var selectedTweet: Status?
 	
 	// MARK: - Life cycle
     override func viewDidLoad() {
@@ -69,18 +69,22 @@ class ReaktorMapViewController: UIViewController {
 		
 		for tweet in newTweets {
 			if count == 0 {
-				addTweetToMap(tweet: tweet, bearing: .north)
+				addTweetToMap(tweet: tweet, bearing: .north, count: count)
 			} else if count == 1 {
-				addTweetToMap(tweet: tweet, bearing: .east)
+				addTweetToMap(tweet: tweet, bearing: .east, count: count)
 			} else if count == 2 {
-				addTweetToMap(tweet: tweet, bearing: .west)
+				addTweetToMap(tweet: tweet, bearing: .west, count: count)
+			} else if count == 3 {
+				addTweetToMap(tweet: tweet, bearing: .south, count: count)
+			} else if count == 4 {
+				addTweetToMap(tweet: tweet, bearing: .northwest, count: count)
 			}
 			
 			count += 1
 		}
 	}
 	
-	private func addTweetToMap(tweet: Status, bearing: Bearing) {
+	private func addTweetToMap(tweet: Status, bearing: Bearing, count: Int) {
 		
 		let annotationLocation = LocationNearUser.locationWithBearing(bearing: bearing, distanceMeters: 200, origin: fetchUserLocation().coordinate)
 		
@@ -89,10 +93,7 @@ class ReaktorMapViewController: UIViewController {
 		let annotation = MKPointAnnotation();
 		annotation.coordinate = tweetCoordinate;
 		annotation.title = tweet.user.screenName
-		
-		if let urlElement = tweet.entities.urls.first {
-			annotation.subtitle = urlElement.url
-		}
+		annotation.subtitle = String(count)
 		
 		mapView.addAnnotation(annotation);
 	}
@@ -106,8 +107,9 @@ class ReaktorMapViewController: UIViewController {
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if segue.identifier == "goToTwitterWebView" {
 			let twitterModalViewController = segue.destination as! TwitterModalViewController
-			if let selectedUrl = selectedUrl {
-				twitterModalViewController.webAddress = selectedUrl
+			if let selectedTweet = selectedTweet {
+				twitterModalViewController.idStr = selectedTweet.idStr
+				twitterModalViewController.handle = selectedTweet.user.screenName
 			} else {
 				print("Couldn't get web address")
 			}
@@ -174,10 +176,15 @@ extension ReaktorMapViewController: MKMapViewDelegate {
 	
 	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
 		if let annotation = view.annotation {
-			selectedUrl = annotation.subtitle!
-			performSegue(withIdentifier: "goToTwitterWebView", sender: self)
+			if let subtitle = annotation.subtitle! {
+				let annotationCount = Int(subtitle)
+				selectedTweet = viewModel.tweets[annotationCount!]
+				performSegue(withIdentifier: "goToTwitterWebView", sender: self)
+			}
 		} else {
 			print("Error")
+			let banner = StatusBarNotificationBanner(title: "An error occured retrieving the tweet, please refresh the query.", style: .danger)
+			banner.show()
 		}
 	}
 }
