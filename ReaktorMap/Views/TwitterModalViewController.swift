@@ -25,6 +25,8 @@ class TwitterModalViewController: UIViewController {
 			} catch {
 				print("Error")
 			}
+		} else {
+			dismiss(animated: true, completion: nil)
 		}
     }
 }

@@ -26,6 +26,7 @@
 		6C8887C42245D341005C25A9 /* TwitterModalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8887C32245D341005C25A9 /* TwitterModalViewController.swift */; };
 		6C8887C62245D42C005C25A9 /* Entities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8887C52245D42C005C25A9 /* Entities.swift */; };
 		6C8887C82245D4BA005C25A9 /* URLElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8887C72245D4BA005C25A9 /* URLElement.swift */; };
+		6C8887CA2246EF29005C25A9 /* FormatHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C8887C92246EF28005C25A9 /* FormatHelper.swift */; };
 		92962E9A55D8A5C89183BD43 /* Pods_ReaktorMap.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4433EEFC5FC0DD29AA6C2108 /* Pods_ReaktorMap.framework */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,7 @@
 		6C8887C32245D341005C25A9 /* TwitterModalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TwitterModalViewController.swift; sourceTree = "<group>"; };
 		6C8887C52245D42C005C25A9 /* Entities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Entities.swift; sourceTree = "<group>"; };
 		6C8887C72245D4BA005C25A9 /* URLElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLElement.swift; sourceTree = "<group>"; };
+		6C8887C92246EF28005C25A9 /* FormatHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormatHelper.swift; sourceTree = "<group>"; };
 		E05786758F452AC41D33201F /* Pods-ReaktorMap.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ReaktorMap.release.xcconfig"; path = "Pods/Target Support Files/Pods-ReaktorMap/Pods-ReaktorMap.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -188,6 +190,7 @@
 		6C8887AD2243F0B0005C25A9 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				6C8887C92246EF28005C25A9 /* FormatHelper.swift */,
 				6C8887B722443549005C25A9 /* String+Base64.swift */,
 				6C8887C12245CCAE005C25A9 /* LocationNearUser.swift */,
 			);
@@ -289,14 +292,20 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-ReaktorMap/Pods-ReaktorMap-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Alamofire/Alamofire.framework",
+				"${BUILT_PRODUCTS_DIR}/MarqueeLabel/MarqueeLabel.framework",
 				"${BUILT_PRODUCTS_DIR}/Moya/Moya.framework",
+				"${BUILT_PRODUCTS_DIR}/NotificationBannerSwift/NotificationBannerSwift.framework",
 				"${BUILT_PRODUCTS_DIR}/Result/Result.framework",
+				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Alamofire.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MarqueeLabel.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Moya.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NotificationBannerSwift.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Result.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -316,6 +325,7 @@
 				6C8887C42245D341005C25A9 /* TwitterModalViewController.swift in Sources */,
 				6C8887B62244208F005C25A9 /* Token.swift in Sources */,
 				6C88878522429451005C25A9 /* AppDelegate.swift in Sources */,
+				6C8887CA2246EF29005C25A9 /* FormatHelper.swift in Sources */,
 				6C8887C22245CCAE005C25A9 /* LocationNearUser.swift in Sources */,
 				6C88879D2242983D005C25A9 /* UserLocationManager.swift in Sources */,
 				6C8887C82245D4BA005C25A9 /* URLElement.swift in Sources */,

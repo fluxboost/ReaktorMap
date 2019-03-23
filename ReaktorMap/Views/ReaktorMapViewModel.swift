@@ -14,6 +14,7 @@ import Moya
 
 protocol ReaktorMapViewModelDelegate: class {
 	func didAddTweets(updatedViewModel: ReaktorMapViewModel, newTweets: [Status])
+	func refreshTweets()
 }
 
 class ReaktorMapViewModel {
@@ -78,7 +79,11 @@ class ReaktorMapViewModel {
 		let latitude = String(format:"%f", location.coordinate.latitude)
 		let longitude = String(format:"%f", location.coordinate.longitude)
 		
-		provider.request(.search(query: query, count: String(count), resultType: resultType, latitude: latitude, longitude: longitude)) { result in
+		timer = Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(refreshSearch), userInfo: nil, repeats: false)
+		
+		let formattedQuery = FormatHelper.formatSearchInput(input: query)
+		
+		provider.request(.search(query: formattedQuery, count: String(count), resultType: resultType, latitude: latitude, longitude: longitude)) { result in
 			switch result {
 				
 			case let .success(moyaResponse):
@@ -104,5 +109,14 @@ class ReaktorMapViewModel {
 				print(error.localizedDescription)
 			}
 		}
+	}
+	
+	@objc func refreshSearch() {
+		delegate?.refreshTweets()
+	}
+	
+	func clearTweets() {
+		tweets = []
+		timer?.invalidate()
 	}
 }

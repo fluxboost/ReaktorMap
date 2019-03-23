@@ -1,27 +1,38 @@
 PODS:
   - Alamofire (4.8.1)
+  - MarqueeLabel/Swift (3.2.1)
   - Moya (12.0.1):
     - Moya/Core (= 12.0.1)
   - Moya/Core (12.0.1):
     - Alamofire (~> 4.1)
     - Result (~> 4.0)
+  - NotificationBannerSwift (2.0.1):
+    - MarqueeLabel/Swift (~> 3.2.0)
+    - SnapKit (~> 4.2.0)
   - Result (4.1.0)
+  - SnapKit (4.2.0)
 
 DEPENDENCIES:
-  - Alamofire
   - Moya (~> 12.0)
+  - NotificationBannerSwift
 
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - Alamofire
+    - MarqueeLabel
     - Moya
+    - NotificationBannerSwift
     - Result
+    - SnapKit
 
 SPEC CHECKSUMS:
   Alamofire: 16ce2c353fb72865124ddae8a57c5942388f4f11
+  MarqueeLabel: 2daf039bf916937c8a4c9adfc13577cc5e51b4ce
   Moya: cf730b3cd9e005401ef37a85143aa141a12fd38f
+  NotificationBannerSwift: 007774aa590cc9680647b92b2f217bef5c00c32c
   Result: bd966fac789cc6c1563440b348ab2598cc24d5c7
+  SnapKit: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
 
-PODFILE CHECKSUM: 3623b0dd80bff9811bc2163b4ebd712b59def381
+PODFILE CHECKSUM: 1103de88b1c386318cd3c9a91702d9e57bd58c0c
 
 COCOAPODS: 1.5.3

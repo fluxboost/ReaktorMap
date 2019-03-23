@@ -9,7 +9,7 @@
 import UIKit
 import CoreLocation
 import MapKit
-import Alamofire
+import NotificationBannerSwift
 
 class ReaktorMapViewController: UIViewController {
 
@@ -97,6 +97,12 @@ class ReaktorMapViewController: UIViewController {
 		mapView.addAnnotation(annotation);
 	}
 	
+	private func removeCurrentTweets() {
+		viewModel.clearTweets()
+		let allAnnotations = self.mapView.annotations
+		self.mapView.removeAnnotations(allAnnotations)
+	}
+	
 	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if segue.identifier == "goToTwitterWebView" {
 			let twitterModalViewController = segue.destination as! TwitterModalViewController
@@ -106,7 +112,7 @@ class ReaktorMapViewController: UIViewController {
 				print("Couldn't get web address")
 			}
 		}
-	}
+	}	
 }
 
 extension ReaktorMapViewController: ReaktorMapViewModelDelegate {
@@ -117,7 +123,14 @@ extension ReaktorMapViewController: ReaktorMapViewModelDelegate {
 		if newTweets.count > 0  {
 			fadeOutOldTweets()
 			addNewTweetsToMap(newTweets: newTweets)
+		} else {
+			let banner = StatusBarNotificationBanner(title: "No tweets found, will retry every 10 seconds.", style: .danger)
+			banner.show()
 		}
+	}
+	
+	func refreshTweets() {
+		viewModel.fetchTweets(query: searchBar.text!, count: 4, resultType: "recent", location: fetchUserLocation())
 	}
 }
 
@@ -142,15 +155,19 @@ extension ReaktorMapViewController: CLLocationManagerDelegate {
 // MKMapView Delegate
 
 extension ReaktorMapViewController: MKMapViewDelegate {
+	
 	func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
-		
-		UIView.animate(withDuration: 1.5, animations: {
-			for view in views {
-				view.alpha = 0.0
-			}
-		}) { (Bool) in
-			for view in views {
-				view.alpha = 1.0
+		DispatchQueue.main.async {
+			UIView.animate(withDuration: 2, delay: 0, options: .curveEaseOut, animations: {
+				for view in views {
+					view.alpha = 0.0
+					view.layoutIfNeeded()
+				}
+			}) { completion in
+				for view in views {
+					view.alpha = 1.0
+					view.layoutIfNeeded()
+				}
 			}
 		}
 	}
@@ -170,9 +187,15 @@ extension ReaktorMapViewController: UISearchBarDelegate {
 	func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 		searchBar.text = ""
 		searchBar.endEditing(true)
+		removeCurrentTweets()
+	}
+	
+	func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+		removeCurrentTweets()
 	}
 	
 	func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
 		viewModel.fetchTweets(query: searchBar.text!, count: 3, resultType: "recent", location: fetchUserLocation())
+		searchBar.endEditing(true)
 	}
 }
