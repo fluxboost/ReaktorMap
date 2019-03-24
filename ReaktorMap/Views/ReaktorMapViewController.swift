@@ -66,18 +66,18 @@ class ReaktorMapViewController: UIViewController {
 	*/
 	private func addNewTweetsToMap(newTweets: [Status]) {
 		
-		var count = 0
+		var count = 1
 		
 		for tweet in newTweets {
-			if count == 0 {
+			if count == 1 {
 				addTweetToMap(tweet: tweet, bearing: .north, count: count)
-			} else if count == 1 {
-				addTweetToMap(tweet: tweet, bearing: .east, count: count)
 			} else if count == 2 {
-				addTweetToMap(tweet: tweet, bearing: .west, count: count)
+				addTweetToMap(tweet: tweet, bearing: .east, count: count)
 			} else if count == 3 {
-				addTweetToMap(tweet: tweet, bearing: .south, count: count)
+				addTweetToMap(tweet: tweet, bearing: .west, count: count)
 			} else if count == 4 {
+				addTweetToMap(tweet: tweet, bearing: .south, count: count)
+			} else if count == 5 {
 				addTweetToMap(tweet: tweet, bearing: .northwest, count: count)
 			}
 			
@@ -106,7 +106,6 @@ class ReaktorMapViewController: UIViewController {
 	Remove tweets from the view model, fade them out on the map, then remove them from the map view.
 	*/
 	private func removeCurrentTweets() {
-		viewModel.clearTweets()
 		let allAnnotations = self.mapView.annotations
 		
 		for annotation in allAnnotations {
@@ -136,6 +135,7 @@ class ReaktorMapViewController: UIViewController {
 		if segue.identifier == "goToTwitterWebView" {
 			let twitterModalViewController = segue.destination as! TwitterModalViewController
 			if let selectedTweet = selectedTweet {
+				twitterModalViewController.delegate = self
 				twitterModalViewController.idStr = selectedTweet.idStr
 				twitterModalViewController.handle = selectedTweet.user.screenName
 			} else {
@@ -215,6 +215,7 @@ extension ReaktorMapViewController: MKMapViewDelegate {
 			if let subtitle = annotation.subtitle! {
 				let annotationCount = Int(subtitle)
 				selectedTweet = viewModel.tweets[annotationCount!]
+				viewModel.stopRefreshTimer()
 				performSegue(withIdentifier: "goToTwitterWebView", sender: self)
 			}
 		} else {
@@ -237,19 +238,18 @@ extension ReaktorMapViewController: UISearchBarDelegate {
 	}
 	
 	/**
-	Upon editing the search field, remove tweets and reset the map.
-	*/
-	func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-		removeCurrentTweets()
-	}
-	
-	/**
 	When the search button is pressed, the view model fetches tweets to show on the map.
 	*/
 	func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-		mapView.showsUserLocation = true
 		mapView.setUserTrackingMode(.follow, animated: true)
 		viewModel.fetchTweets(query: searchBar.text!, count: 3, resultType: "recent", location: fetchUserLocation())
 		searchBar.endEditing(true)
+	}
+}
+
+extension ReaktorMapViewController: TwitterModalViewControllerDelegate {
+	
+	func didReturnFromTwitterWebView() {
+		viewModel.resumeRefreshTimer()
 	}
 }

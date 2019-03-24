@@ -88,7 +88,7 @@ class ReaktorMapViewModel {
 				do {
 					let filteredResponse = try moyaResponse.filterSuccessfulStatusCodes()
 					let statuses = try filteredResponse.map(Statuses.self)
-					self.tweets.append(contentsOf: statuses.statuses)
+					self.tweets = statuses.statuses
 					self.updateView(newTweets: statuses.statuses)
 					print(statuses)
 				} catch {
@@ -113,6 +113,20 @@ class ReaktorMapViewModel {
 	*/
 	@objc func refreshSearch() {
 		delegate?.refreshTweets()
+	}
+	
+	/**
+	Pause refresh timer to avoid updating tweets in the background and affecting the indexes.
+	*/
+	func resumeRefreshTimer() {
+		timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(refreshSearch), userInfo: nil, repeats: false)
+	}
+	
+	/**
+	Pause refresh timer to avoid updating tweets in the background and affecting the indexes.
+	*/
+	func stopRefreshTimer() {
+		timer?.invalidate()
 	}
 	
 	/**

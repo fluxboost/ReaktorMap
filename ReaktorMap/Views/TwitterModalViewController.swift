@@ -9,9 +9,15 @@
 import UIKit
 import WebKit
 
+protocol TwitterModalViewControllerDelegate: class {
+	func didReturnFromTwitterWebView()
+}
+
 class TwitterModalViewController: UIViewController {
 
 	@IBOutlet weak var webView: WKWebView!
+	
+	weak var delegate: TwitterModalViewControllerDelegate?
 	
 	var handle: String?
 	var idStr: String?
@@ -34,4 +40,9 @@ class TwitterModalViewController: UIViewController {
 			dismiss(animated: true, completion: nil)
 		}
     }
+	
+	override func viewDidDisappear(_ animated: Bool) {
+		super.viewDidDisappear(animated)
+		delegate?.didReturnFromTwitterWebView()
+	}
 }
