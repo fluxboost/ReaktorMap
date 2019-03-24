@@ -66,18 +66,18 @@ class ReaktorMapViewController: UIViewController {
 	*/
 	private func addNewTweetsToMap(newTweets: [Status]) {
 		
-		var count = 1
+		var count = 0
 		
 		for tweet in newTweets {
-			if count == 1 {
+			if count == 0 {
 				addTweetToMap(tweet: tweet, bearing: .north, count: count)
-			} else if count == 2 {
+			} else if count == 1 {
 				addTweetToMap(tweet: tweet, bearing: .east, count: count)
-			} else if count == 3 {
+			} else if count == 2 {
 				addTweetToMap(tweet: tweet, bearing: .west, count: count)
-			} else if count == 4 {
+			} else if count == 3 {
 				addTweetToMap(tweet: tweet, bearing: .south, count: count)
-			} else if count == 5 {
+			} else if count == 4 {
 				addTweetToMap(tweet: tweet, bearing: .northwest, count: count)
 			}
 			
@@ -242,7 +242,7 @@ extension ReaktorMapViewController: UISearchBarDelegate {
 	*/
 	func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
 		mapView.setUserTrackingMode(.follow, animated: true)
-		viewModel.fetchTweets(query: searchBar.text!, count: 3, resultType: "recent", location: fetchUserLocation())
+		viewModel.fetchTweets(query: searchBar.text!, count: 5, resultType: "recent", location: fetchUserLocation())
 		searchBar.endEditing(true)
 	}
 }

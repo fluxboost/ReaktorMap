@@ -6,7 +6,6 @@
 //  Copyright © 2019 harryliddell. All rights reserved.
 //
 
-import Alamofire
 import CoreLocation
 import Moya
 

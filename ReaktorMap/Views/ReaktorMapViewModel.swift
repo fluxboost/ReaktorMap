@@ -9,7 +9,6 @@
 import UIKit
 import Foundation
 import CoreLocation
-import Alamofire
 import Moya
 
 protocol ReaktorMapViewModelDelegate: class {
@@ -119,7 +118,9 @@ class ReaktorMapViewModel {
 	Pause refresh timer to avoid updating tweets in the background and affecting the indexes.
 	*/
 	func resumeRefreshTimer() {
-		timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(refreshSearch), userInfo: nil, repeats: false)
+		if timer == nil {
+			timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(refreshSearch), userInfo: nil, repeats: false)
+		}
 	}
 	
 	/**
