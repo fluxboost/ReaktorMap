@@ -22,11 +22,11 @@ class ReaktorMapViewController: UIViewController {
 	private var viewModel = ReaktorMapViewModel()
 	private var selectedTweet: Status?
 	
-	// MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
 		
 		viewModel.delegate = self
+		userLocationManager.locationManager.delegate = self
 		
 		if userLocationManager.checkIfAuthorised() {
 			setupLocationManager()
@@ -41,7 +41,6 @@ class ReaktorMapViewController: UIViewController {
 	Sets the location manager delegate and begins tracking the user.
 	*/
 	private func setupLocationManager() {
-		userLocationManager.locationManager.delegate = self
 		mapView.setUserTrackingMode(.follow, animated: true)
 		applyUserRegionToMap()
 	}
@@ -55,14 +54,16 @@ class ReaktorMapViewController: UIViewController {
 		mapView.setRegion(region, animated: false)
 	}
 	
+	/**
+	Get the user's current location as CLLocation
+	*/
 	private func fetchUserLocation() -> CLLocation {
 		return mapView.userLocation.location!
 	}
-	
-	private func fadeOutOldTweets() {
-		
-	}
-	
+
+	/**
+	Add tweets in specific directions and distances directly around the user so they're viewable.
+	*/
 	private func addNewTweetsToMap(newTweets: [Status]) {
 		
 		var count = 0
@@ -84,6 +85,9 @@ class ReaktorMapViewController: UIViewController {
 		}
 	}
 	
+	/**
+	Add tweet to the map in certain areas around the user.
+	*/
 	private func addTweetToMap(tweet: Status, bearing: Bearing, count: Int) {
 		
 		let annotationLocation = LocationNearUser.locationWithBearing(bearing: bearing, distanceMeters: 200, origin: fetchUserLocation().coordinate)
@@ -98,9 +102,33 @@ class ReaktorMapViewController: UIViewController {
 		mapView.addAnnotation(annotation);
 	}
 	
+	/**
+	Remove tweets from the view model, fade them out on the map, then remove them from the map view.
+	*/
 	private func removeCurrentTweets() {
 		viewModel.clearTweets()
 		let allAnnotations = self.mapView.annotations
+		
+		for annotation in allAnnotations {
+			let annotationView = mapView.view(for: annotation)
+			
+			// Prevent user location annotation from being removed from the view.
+			if !annotation.isKind(of: MKUserLocation.self) {
+				DispatchQueue.main.async {
+					if let annotationView = annotationView {
+						UIView.animate(withDuration: 2, delay: 0, options: .curveEaseOut, animations: {
+							annotationView.alpha = 1.0
+							annotationView.layoutIfNeeded()
+						}) { completion in
+							annotationView.alpha = 0.0
+							annotationView.layoutIfNeeded()
+							self.mapView.removeAnnotation(annotation)
+						}
+					}
+				}
+			}
+		}
+		
 		self.mapView.removeAnnotations(allAnnotations)
 	}
 	
@@ -119,11 +147,14 @@ class ReaktorMapViewController: UIViewController {
 
 extension ReaktorMapViewController: ReaktorMapViewModelDelegate {
 	
+	/**
+	View model delegate function to update the view model and display the new tweets
+	*/
 	func didAddTweets(updatedViewModel: ReaktorMapViewModel, newTweets: [Status]) {
 		viewModel = updatedViewModel
 		
 		if newTweets.count > 0  {
-			fadeOutOldTweets()
+			removeCurrentTweets()
 			addNewTweetsToMap(newTweets: newTweets)
 		} else {
 			let banner = StatusBarNotificationBanner(title: "No tweets found, will retry every 10 seconds.", style: .danger)
@@ -131,6 +162,9 @@ extension ReaktorMapViewController: ReaktorMapViewModelDelegate {
 		}
 	}
 	
+	/**
+	View model delegate to resend the current query to update the tweets.
+	*/
 	func refreshTweets() {
 		viewModel.fetchTweets(query: searchBar.text!, count: 4, resultType: "recent", location: fetchUserLocation())
 	}
@@ -148,16 +182,15 @@ extension ReaktorMapViewController: CLLocationManagerDelegate {
 			setupLocationManager()
 		}
 	}
-	
-	func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-		
-	}
 }
 
 // MKMapView Delegate
 
 extension ReaktorMapViewController: MKMapViewDelegate {
 	
+	/**
+	Fade the new tweets in.
+	*/
 	func mapView(_ mapView: MKMapView, didAdd views: [MKAnnotationView]) {
 		DispatchQueue.main.async {
 			UIView.animate(withDuration: 2, delay: 0, options: .curveEaseOut, animations: {
@@ -174,6 +207,9 @@ extension ReaktorMapViewController: MKMapViewDelegate {
 		}
 	}
 	
+	/**
+	When the user selects an annotation it opens the tweet in a web view.
+	*/
 	func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
 		if let annotation = view.annotation {
 			if let subtitle = annotation.subtitle! {
@@ -191,17 +227,28 @@ extension ReaktorMapViewController: MKMapViewDelegate {
 
 extension ReaktorMapViewController: UISearchBarDelegate {
 	
+	/**
+	When search is cancelled, clear the search bar and reset the map.
+	*/
 	func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 		searchBar.text = ""
 		searchBar.endEditing(true)
 		removeCurrentTweets()
 	}
 	
+	/**
+	Upon editing the search field, remove tweets and reset the map.
+	*/
 	func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
 		removeCurrentTweets()
 	}
 	
+	/**
+	When the search button is pressed, the view model fetches tweets to show on the map.
+	*/
 	func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+		mapView.showsUserLocation = true
+		mapView.setUserTrackingMode(.follow, animated: true)
 		viewModel.fetchTweets(query: searchBar.text!, count: 3, resultType: "recent", location: fetchUserLocation())
 		searchBar.endEditing(true)
 	}
