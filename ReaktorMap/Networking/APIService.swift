@@ -42,7 +42,7 @@ extension APIService: TargetType {
 		case .authenticate: // Send no parameters
 			return .requestParameters(parameters: ["grant_type": "client_credentials"], encoding: URLEncoding.queryString)
 		case let .search(input, count, resultType, latitude, longitude):  // Always sends parameters in URL, regardless of which HTTP method is used
-			return .requestParameters(parameters: ["q": input, "count": count, "result_type" : resultType, "geocode" : "\(latitude),\(longitude),20mi"], encoding: URLEncoding.queryString)
+			return .requestParameters(parameters: ["q": input, "count": count, "result_type" : resultType, "geocode" : "\(latitude),\(longitude),1mi"], encoding: URLEncoding.queryString)
 		}
 	}
 	
